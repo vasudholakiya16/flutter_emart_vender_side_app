@@ -30,7 +30,9 @@ class SettingScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Get.to(() => const EditProfileScreen());
+              Get.to(() => EditProfileScreen(
+                    username: controller.snapshortData['name'],
+                  ));
             },
             icon: const Icon(
               Icons.edit,
@@ -56,11 +58,17 @@ class SettingScreen extends StatelessWidget {
               return Column(
                 children: [
                   ListTile(
-                    leading: Image.asset(img1)
-                        .box
-                        .roundedFull
-                        .clip(Clip.antiAlias)
-                        .make(),
+                    leading: controller.snapshortData['imageUrl'] == ''
+                        ? Image.asset(
+                            img1,
+                            width: 70,
+                            fit: BoxFit.cover,
+                          ).box.roundedFull.clip(Clip.antiAlias).make()
+                        : Image.network(
+                            controller.snapshortData['imageUrl'],
+                            width: 70,
+                            fit: BoxFit.cover,
+                          ).box.roundedFull.clip(Clip.antiAlias).make(),
                     title:
                         boldText(text: "${controller.snapshortData['name']}"),
                     subtitle: normalText(
