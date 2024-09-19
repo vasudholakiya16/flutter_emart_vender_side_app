@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_emart_vender_side_app/const/const.dart';
+import 'package:flutter_emart_vender_side_app/const/firebase_constant.dart';
 import 'package:flutter_emart_vender_side_app/products/add_new_product.dart';
 import 'package:flutter_emart_vender_side_app/products/product_detail_screen.dart';
+import 'package:flutter_emart_vender_side_app/services/store_services.dart';
+import 'package:flutter_emart_vender_side_app/widgets/loadingIndigature.dart';
 import 'package:flutter_emart_vender_side_app/widgets/text_style.dart';
 import 'package:get/get.dart';
 // ignore: depend_on_referenced_packages
@@ -40,58 +44,125 @@ class ProductScreen extends StatelessWidget {
           const SizedBox(width: 10),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: 20,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              onTap: () {
-                Get.to(() => const ProductDetailScreen());
-              },
-              leading: Image.asset(
-                img1,
-                width: 100.0,
-                height: 100.0,
-                fit: BoxFit.cover,
-              ),
-              title: boldText(
-                text: "Product title",
-                color: fontGrey,
-                size: 14.0,
-              ),
-              subtitle: Row(
-                children: [
-                  normalText(text: "\$40.0", color: darkGrey),
-                  10.widthBox,
-                  boldText(text: "Featured", color: green)
-                ],
-              ),
-              trailing: VxPopupMenu(
-                  arrowSize: 0.0,
-                  menuBuilder: () => Column(
-                        children: List.generate(
-                            popuplenuTitles.length,
-                            (index) => Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(popuplenuIconsList[index]),
-                                      10.widthBox,
-                                      normalText(
-                                          text: popuplenuTitles[index],
-                                          color: darkGrey)
-                                    ],
-                                  ).onTap(() {}),
-                                )),
-                      ).box.white.roundedSM.width(200).make(),
-                  clickType: VxClickType.singleClick,
-                  child: const Icon(Icons.more_vert_rounded)),
-            );
-          },
-        ),
-      ),
+      body: StreamBuilder(
+          stream: StoreServices.getProducts(currentUser!.uid),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return loadingIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: Text('No data available'),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: 20,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      onTap: () {
+                        Get.to(() => const ProductDetailScreen());
+                      },
+                      leading: Image.asset(
+                        img1,
+                        width: 100.0,
+                        height: 100.0,
+                        fit: BoxFit.cover,
+                      ),
+                      title: boldText(
+                        text: "Product title",
+                        color: fontGrey,
+                        size: 14.0,
+                      ),
+                      subtitle: Row(
+                        children: [
+                          normalText(text: "\$40.0", color: darkGrey),
+                          10.widthBox,
+                          boldText(text: "Featured", color: green)
+                        ],
+                      ),
+                      trailing: VxPopupMenu(
+                          arrowSize: 0.0,
+                          menuBuilder: () => Column(
+                                children: List.generate(
+                                    popuplenuTitles.length,
+                                    (index) => Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(popuplenuIconsList[index]),
+                                              10.widthBox,
+                                              normalText(
+                                                  text: popuplenuTitles[index],
+                                                  color: darkGrey)
+                                            ],
+                                          ).onTap(() {}),
+                                        )),
+                              ).box.white.roundedSM.width(200).make(),
+                          clickType: VxClickType.singleClick,
+                          child: const Icon(Icons.more_vert_rounded)),
+                    );
+                  },
+                ),
+              );
+            }
+          }),
+      // body: Padding(
+      //   padding: const EdgeInsets.all(8.0),
+      //   child: ListView.builder(
+      //     physics: const BouncingScrollPhysics(),
+      //     itemCount: 20,
+      //     itemBuilder: (BuildContext context, int index) {
+      //       return ListTile(
+      //         onTap: () {
+      //           Get.to(() => const ProductDetailScreen());
+      //         },
+      //         leading: Image.asset(
+      //           img1,
+      //           width: 100.0,
+      //           height: 100.0,
+      //           fit: BoxFit.cover,
+      //         ),
+      //         title: boldText(
+      //           text: "Product title",
+      //           color: fontGrey,
+      //           size: 14.0,
+      //         ),
+      //         subtitle: Row(
+      //           children: [
+      //             normalText(text: "\$40.0", color: darkGrey),
+      //             10.widthBox,
+      //             boldText(text: "Featured", color: green)
+      //           ],
+      //         ),
+      //         trailing: VxPopupMenu(
+      //             arrowSize: 0.0,
+      //             menuBuilder: () => Column(
+      //                   children: List.generate(
+      //                       popuplenuTitles.length,
+      //                       (index) => Padding(
+      //                             padding: const EdgeInsets.all(12.0),
+      //                             child: Row(
+      //                               children: [
+      //                                 Icon(popuplenuIconsList[index]),
+      //                                 10.widthBox,
+      //                                 normalText(
+      //                                     text: popuplenuTitles[index],
+      //                                     color: darkGrey)
+      //                               ],
+      //                             ).onTap(() {}),
+      //                           )),
+      //                 ).box.white.roundedSM.width(200).make(),
+      //             clickType: VxClickType.singleClick,
+      //             child: const Icon(Icons.more_vert_rounded)),
+      //       );
+      //     },
+      //   ),
+      // ),
     );
   }
 }

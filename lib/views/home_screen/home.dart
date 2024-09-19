@@ -17,6 +17,7 @@ class Home extends StatelessWidget {
       const ProductScreen(),
       const OrderScreen(),
       const SettingScreen(),
+      // const SettingScreen(),
     ];
     var bottomNavbar = [
       const BottomNavigationBarItem(

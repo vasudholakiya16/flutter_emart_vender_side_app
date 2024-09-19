@@ -21,6 +21,14 @@ class ProfileController extends GetxController {
   var nameController = TextEditingController();
   var oldpassController = TextEditingController();
   var newpassController = TextEditingController();
+
+  // Shop Controller
+  var shopNameController = TextEditingController();
+  var shopAddressController = TextEditingController();
+  var shopMobileController = TextEditingController();
+  var shopWesiteController = TextEditingController();
+  var shopDescriptionController = TextEditingController();
+
   changeImage(context) async {
     try {
       final img = await ImagePicker()
@@ -61,5 +69,18 @@ class ProfileController extends GetxController {
     }).catchError((error) {
       print(error.toString());
     });
+  }
+
+  // Shop setting code
+  shopUpdate(shopname, shopaddress, shopmobile, shopwebsite, shopdesc) async {
+    var store = firestore.collection(vendorsCollections).doc(currentUser!.uid);
+    await store.set({
+      'shop_name': shopname,
+      'shop_address': shopaddress,
+      'shop_mobile': shopmobile,
+      'shop_website': shopwebsite,
+      'shop_desc': shopdesc,
+    }, SetOptions(merge: true));
+    isloading(false);
   }
 }
